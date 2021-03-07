@@ -1,0 +1,246 @@
+{% load static %}
+
+<!Doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>USER.LOGIN</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'excel/stylesheets/style1.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'excel/stylesheets/style2.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+            .changeColor
+            {
+                background-color: rgb(255,255,79);
+                color: black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h1 style="text-align: center;"><b>Excel File</b></h1>
+                </div>
+                <div class="col-sm-3">
+
+                        <div class="row" style="margin-top: 5%;">
+                            <div class="col-md-1">
+                                <i class="fa fa-search" id="search_btn"></i>
+                            </div>
+                            <div class="col-md-11">
+                                <input type="text" placeholder="Enter State Name" name="searchCity" id="searchCity">
+                            </div>
+                        </div>
+                        
+                        <script>  
+                            $(document).ready(function () {   
+                                    $.ajax({  
+                                        url: 'http://127.0.0.1:8000/ajax_example/',
+                                        type: 'get',  
+                                        dataType: 'json',  
+                                        data: [],  
+                                        success: function (data, textStatus, xhr) {  
+                                            console.log(data);  
+                                            data.forEach(element => {
+                                               
+                                           var deletetext ='<button class="btn btn-danger" type="button" id="btn_del" data-target="#deleteModal'+element.pk+'" data-toggle="modal"> DELETE </button><div class="modal fade" id="deleteModal'+element.pk+'"><div class="modal-dialog">'+
+                            '<div class="modal-content">'+
+                             '   <div class="modal-body">'+
+                                '     <form method="post">'+
+                                    '       {% csrf_token %}'+
+                                    '   <div class="row">'+
+                                        '       <div class="col-sm-12">Are you sure to delete '+ element.first_name +' ?</div>'+
+                                        '</div>'+
+                                        '<div class="row">'+
+                                            '   <div class="col-sm-12">'+
+                                                '   <input class="form-control" type="text" name="del" value="'+element.pk+'" style="visibility: hidden;">'+
+                                                '     </div>'+
+                                                '  </div>'+
+                                                '     <div class="row" style="margin-top: 2%;">'+
+                                                    '         <div class="col-sm-8"></div>'+
+                                                    '       <div class="col-sm-2">'+
+                                                        '        <button class="btn btn-danger" type="submit" style="float: right;width:100%;">'+
+                                                        '               YES'+
+                                                        '       </button>'+
+                                                        '   </div>'+
+                                                        '  <div class="col-sm-2">'+
+                                                            '     <button class="btn btn-default" data-dismiss="modal" style="float: right;">CANCEL</button>'+
+                                                            '  </div>'+
+                                                            ' </div>'+
+                                                            ' </form>'+
+                                                            ' </div>'+
+                                                            ' <div class="modal-footer"></div>'+
+                                                            '</div>'+
+                                                            '</div>'+
+                                                            ' </div>'
+var changecolortext='<div  id="col_style">'+
+    '<button type="submit" class="btn btn-default btn_change_color" id="'+element.pk+'">CHANGE COLOR</button>'+
+    '           </div>'
+
+                                                            var markup = '<tr id="row_style'+element.pk+'"><td>'+deletetext+'</td><td>'+changecolortext+'</td><td><input type="text" name="myInput2" value="'+element.email_id+'"></td><td><input type="text" name="myInput2" value="'+element.first_name+'"></td><td><input type="text" name="myInput2" value="'+element.last_name+'"></td><td><input type="text" name="myInput2" value="'+element.gender+'"></td><td><input type="text" name="myInput2" value="'+element.address+'"></td><td><input type="text" name="myInput2" value="'+element.city+'"></td><td><input type="text" name="myInput2" value="'+element.state+'"></td><td><input type="text" name="myInput2" value="'+element.ZIP+'"></td><td><input type="text" name="myInput2" value="'+element.mobile+'"></td><td><input type="text" name="myInput2" value="'+element.date_of_birth+'"></td></tr>';
+                                                console.log(markup)
+                                                $("table tbody").append(markup);
+                                            });
+                                            
+            
+                                        },  
+                                        error: function (xhr, textStatus, errorThrown) {  
+                                            console.log('Error in Operation');  
+                                        }  
+                                    
+                                });  
+                            });  
+                       </script>
+                       <script>
+                        $('input[type=text]').focus(function() {
+                           
+                           console.log("shd")
+                        });
+						
+						  $('body').on('click', '.btn_change_color', function() {
+                $(this).parents('tr').addClass('changeColor bg-none');
+            });
+            $('body').on('keyup', 'input', function() {
+                copyToClipboard($(this).val());
+            });
+			
+			function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val(element);
+            document.execCommand("copy");
+            $temp.remove();
+        }
+                       </script>  
+                    <script>
+                        const user_input = $("#searchCity")
+                        const search_icon = $('#search-btn')
+                        const content_div = $('#replaceable_content')
+                        const endpoint = '/get_item/'
+                        const delay_by_in_ms = 700
+                        let scheduled_function = false
+
+                        let ajax_call = function (endpoint, request_parameters) {
+                            $.getJSON(endpoint, request_parameters)
+                                .done(response => {
+                                    console.log( response)
+                                    $("table tbody").html("");
+                                    response.forEach(element => {
+                                               
+                                               var deletetext ='<button class="btn btn-danger" type="button" id="btn_del" data-target="#deleteModal'+element.pk+'" data-toggle="modal"> DELETE </button><div class="modal fade" id="deleteModal'+element.pk+'"><div class="modal-dialog">'+
+                                '<div class="modal-content">'+
+                                 '   <div class="modal-body">'+
+                                    '     <form method="post">'+
+                                        '       {% csrf_token %}'+
+                                        '   <div class="row">'+
+                                            '       <div class="col-sm-12">Are you sure to delete '+ element.first_name +' ?</div>'+
+                                            '</div>'+
+                                            '<div class="row">'+
+                                                '   <div class="col-sm-12">'+
+                                                    '   <input class="form-control" type="text" name="del" value="'+element.pk+'" style="visibility: hidden;">'+
+                                                    '     </div>'+
+                                                    '  </div>'+
+                                                    '     <div class="row" style="margin-top: 2%;">'+
+                                                        '         <div class="col-sm-8"></div>'+
+                                                        '       <div class="col-sm-2">'+
+                                                            '        <button class="btn btn-danger" type="submit" style="float: right;width:100%;">'+
+                                                            '               YES'+
+                                                            '       </button>'+
+                                                            '   </div>'+
+                                                            '  <div class="col-sm-2">'+
+                                                                '     <button class="btn btn-default" data-dismiss="modal" style="float: right;">CANCEL</button>'+
+                                                                '  </div>'+
+                                                                ' </div>'+
+                                                                ' </form>'+
+                                                                ' </div>'+
+                                                                ' <div class="modal-footer"></div>'+
+                                                                '</div>'+
+                                                                '</div>'+
+                                                                ' </div>'
+    var changecolortext='<div  id="col_style">'+
+        '<button type="submit" class="btn btn-default btn_change_color" id="'+element.pk+'">CHANGE COLOR</button>'+
+        '           </div>'
+    
+                                                                var markup = '<tr id="row_style'+element.pk+'"><td>'+deletetext+'</td><td>'+changecolortext+'</td><td><input type="text" name="myInput2" value="'+element.email_id+'"></td><td><input type="text" name="myInput2" value="'+element.first_name+'"></td><td><input type="text" name="myInput2" value="'+element.last_name+'"></td><td><input type="text" name="myInput2" value="'+element.gender+'"></td><td><input type="text" name="myInput2" value="'+element.address+'"></td><td><input type="text" name="myInput2" value="'+element.city+'"></td><td><input type="text" name="myInput2" value="'+element.state+'"></td><td><input type="text" name="myInput2" value="'+element.ZIP+'"></td><td><input type="text" name="myInput2" value="'+element.mobile+'"></td><td><input type="text" name="myInput2" value="'+element.date_of_birth+'"></td></tr>';
+                                                    console.log(markup)
+                                                    $("table tbody").append(markup);
+                                // // fade out the artists_div, then:
+                                // content_div.fadeTo('slow', 0).promise().then(() => {
+                                // // replace the HTML contents
+                                // content_div.html(response['html_from_view'])
+                                // // fade-in the div with new contents
+                                // content_div.fadeTo('slow', 1)
+                                // // stop animating search icon
+                                // search_icon.removeClass('blink')
+                               })
+                            })
+                        }
+
+
+                        user_input.on('keyup', function () {
+
+                        const request_parameters = {
+                            q: $(this).val() // value of user_input: the HTML element with ID user-input
+                            }
+
+                        // start animating the search icon with the CSS class
+                        search_icon.addClass('blink')
+
+                        // if scheduled_function is NOT false, cancel the execution of the function
+                         if (scheduled_function) {
+                         clearTimeout(scheduled_function)
+                        }
+
+                        // setTimeout returns the ID of the function to be executed
+                        scheduled_function = setTimeout(ajax_call, delay_by_in_ms, endpoint, request_parameters)
+                    })
+                    </script>
+                </div>
+                <div class="col-sm-2">
+                    <h3 id="userName">Welcome {{ user.username }}</h3>
+                </div>
+                <div class="col-sm-2">
+
+                    <button class="btn btn-danger" data-target="#saveModal" data-toggle="modal" style="margin-top: 9%;background-color: rgba(0,0,0,0);border: 0px solid rgba(0,0,0,0);">
+                        <a href="/logout/" id="logout_btn">LOGOUT</a>
+                    </button>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="height:30px;"></div>
+            </div>
+			<div class="row">
+                <div class="col table-responsive ">
+                    <table class="table table-bordered mytable">
+                <thead>
+                    <tr>
+                        <th></th>
+						                        <th></th>
+
+                        <th>EMAIL ID </th>
+                        <th>FIRST NAME</th>
+                        <th>LAST NAME</th>
+                        <th>GENDER</th>
+                        <th>ADDRESS</th>
+                        <th>CITY</th>
+                        <th>STATE</th>
+                        <th>ZIP</th>
+                        <th>MOBILE</th>
+                        <th>DATE OF BIRTH</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+            </div>
+			</div>
+        </div>
+    </body>
+</html>
